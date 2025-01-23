@@ -17,7 +17,7 @@
 {% if earlier_url %}
 Previous post: <a href="{{top_url}}/{{earlier_url}}">{{earlier | truncate(40, false) }}</a><br>
 {% endif %}
-Current post: <a href="./" style="width: 33%;">{{current | truncate(40, false) }}</a><br>
+Current post: <a href="{{top_url}}/{{current_url}}" style="width: 33%;">{{current | truncate(40, false) }}</a><br>
 {% if later_url %}
 Next post: <a href="{{top_url}}/{{later_url}}" style="width: 33%;">{{later | truncate(40, false) }}</a><br>
 {% endif %}

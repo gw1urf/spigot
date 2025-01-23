@@ -200,6 +200,7 @@ class Spigot(Flask):
             "title":       page_title,
             "pagedate":    page_date,
             "current":     page_title,
+            "current_url": location,
             "earlier":     earlier,
             "later":       later,
             "earlier_url": earlier_url, 
