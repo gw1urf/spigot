@@ -13,7 +13,7 @@ class MarkovChain:
 
         # Read the input file and generate the Markov dartboard.
         prev = ""
-        with open(filename, "r") as f:
+        with open(filename, "r", encoding="utf-8") as f:
             skip = False
             while True:
                 c = f.read(1)
