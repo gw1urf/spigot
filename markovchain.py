@@ -135,13 +135,26 @@ class MarkovChain:
         return "".join(text).strip().replace(" i ", " I ").replace(" i'", " I'")
 
 if __name__ == "__main__":
-    import time
-    random.seed(42)
-    mc = MarkovChain("markov_input.txt", memory=8)
-    start = time.time()
-    for i in range(100):
-        page = mc.generate(20000, "pict")
-    print(page[:200])
-    end = time.time()
-    print((end-start)/100)
+    # Benchmark with the following details.
+    seconds = 5
+    memory = 8
+    length = 20000
+    rndseed = 42
+    textseed = "Sherlock"
 
+    import time
+    random.seed(rndseed)
+    mc = MarkovChain("markov_input.txt", memory=memory)
+    print(f"Benchmarking memory={memory}, length={length} for {seconds} seconds")
+    n = 0
+    chars = 0
+    start = time.time()
+    while True:
+        page = mc.generate(length, textseed)
+        n += 1
+        end = time.time()
+        if end - start >= seconds:
+            break
+    print(page)
+    seconds = end-start
+    print(f"\n{n/seconds:.2f} texts per second, ~{n*length/seconds:.0f} chars per second")
