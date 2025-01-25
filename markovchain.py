@@ -100,34 +100,41 @@ class MarkovChain:
 
         choices = {}
 
-        paraPos = 0
+        paragraphs = []
+        length = 0
+
         while True:
             c = rng.choice(self.dict[prev])
+            text.append(c)
             if c == ".":
-                text.append(". ")
                 if numchars == 0:
                     # numchars = 0 means return one sentence.
+                    paragraphs.append(text)
                     break
-                elif paraPos > self.paraLen:
-                    # numchars > 0 means return paragraphs until
-                    # numchars is exceeded.
-                    text.append("\n\n")
-                    paraPos = 0
-                    if len(text) > numchars:
-                        break
-            else:
-                paraPos += 1
-                text.append(c)
-                if c in """,".!?:)""":
-                    text.append(" ")
-            prev = prev + c
+                else:
+                    plen = len(text)
+                    if plen > self.paraLen:
+                        paragraphs.append(text)
+                        length += plen
 
-            prev = prev[1:]
-        return "".join(text).strip().replace(" i ", " I ").replace(" i'", " I'")
+                        # numchars > 0 means return paragraphs until
+                        # numchars is exceeded.
+                        if length > numchars:
+                            break
+
+                        text = []
+            prev = prev[1:] + c
+
+        # Make each paragraph array into a string.
+        paragraphs = [ "".join(p) for p in paragraphs ]
+
+        if numchars == 0:
+            return paragraphs[0]
+        return paragraphs
 
 if __name__ == "__main__":
     # Benchmark with the following details.
-    seconds = 5
+    seconds = 2
     memory = 8
     length = 20000
     rndseed = 42
@@ -146,6 +153,7 @@ if __name__ == "__main__":
         end = time.time()
         if end - start >= seconds:
             break
-    print(page)
+    print(page[0])
+    print(len("".join(page)))
     seconds = end-start
     print(f"\n{n/seconds:.2f} texts per second, ~{n*length/seconds:.0f} chars per second")
