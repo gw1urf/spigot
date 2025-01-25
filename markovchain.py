@@ -4,7 +4,6 @@ import string
 class MarkovChain:
     def __init__(self, filename=None, memory=5):
         self.paraLen = 300
-        self.lineLen = 62
         self.dict = {}
         self.memory = memory
 
@@ -101,15 +100,10 @@ class MarkovChain:
 
         choices = {}
 
-        linePos = 0
         paraPos = 0
-
         while True:
             c = rng.choice(self.dict[prev])
-            if c.isspace() and linePos > self.lineLen:
-                linePos = 0
-                text.append("\n")
-            elif c == ".":
+            if c == ".":
                 text.append(". ")
                 if numchars == 0:
                     # numchars = 0 means return one sentence.
@@ -119,16 +113,13 @@ class MarkovChain:
                     # numchars is exceeded.
                     text.append("\n\n")
                     paraPos = 0
-                    linePos = 0
                     if len(text) > numchars:
                         break
             else:
-                linePos += 1
                 paraPos += 1
                 text.append(c)
                 if c in """,".!?:)""":
                     text.append(" ")
-                    linePos += 1
             prev = prev + c
 
             prev = prev[1:]
