@@ -14,12 +14,19 @@ class MarkovChain:
         # Read the input file and generate the Markov dartboard.
         prev = ""
         with open(filename, "r", encoding="utf-8") as f:
-            skip = False
-            while True:
-                c = f.read(1)
-                if not c:
-                    break
+            seedtext = f.read()
 
+        # By re-adding the first few charaxters to the
+        # end, we can guarantee that generate() will
+        # always have an option for the next char.
+        # and this saves a test in its loop iteration.
+        # So we scan twice and, on the second scan, break
+        # out as soon as we see a "prev" that's already
+        # been seen.
+
+        skip = False
+        for scan in range(2):
+            for c in seedtext:
                 if c.isalnum():
                     skip = False
                 elif c.isspace():
@@ -40,6 +47,10 @@ class MarkovChain:
                         self.dict[prev] = c
                     prev = prev[1:]
                 prev = prev + c
+
+                # Break out ASAP on the second pass
+                if scan==1 and prev in self.dict:
+                    break
 
         # Make the "starters" dartboard. We look for things that
         # look like the starts of sentences, and we make a dartboard
@@ -94,37 +105,33 @@ class MarkovChain:
         paraPos = 0
 
         while True:
-            if prev in self.dict:
-                c = rng.choice(self.dict[prev])
-                if c.isspace() and linePos > self.lineLen:
+            c = rng.choice(self.dict[prev])
+            if c.isspace() and linePos > self.lineLen:
+                linePos = 0
+                text.append("\n")
+            elif c == ".":
+                text.append(". ")
+                if numchars == 0:
+                    # numchars = 0 means return one sentence.
+                    break
+                elif paraPos > self.paraLen:
+                    # numchars > 0 means return paragraphs until
+                    # numchars is exceeded.
+                    text.append("\n\n")
+                    paraPos = 0
                     linePos = 0
-                    text.append("\n")
-                elif c == ".":
-                    text.append(". ")
-                    if numchars == 0:
-                        # numchars = 0 means return one sentence.
+                    if len(text) > numchars:
                         break
-                    elif paraPos > self.paraLen:
-                        # numchars > 0 means return paragraphs until
-                        # numchars is exceeded.
-                        text.append("\n\n")
-                        paraPos = 0
-                        linePos = 0
-                        if len(text) > numchars:
-                            break
-                else:
-                    linePos += 1
-                    paraPos += 1
-                    text.append(c)
-                    if c in """,".!?:)""":
-                        text.append(" ")
-                        linePos += 1
-                prev = prev + c
             else:
-                prev = rng.choice(list(self.dict.keys()))
+                linePos += 1
+                paraPos += 1
+                text.append(c)
+                if c in """,".!?:)""":
+                    text.append(" ")
+                    linePos += 1
+            prev = prev + c
 
-            if len(prev) > self.memory:
-                prev = prev[1:]
+            prev = prev[1:]
         return "".join(text).strip().replace(" i ", " I ").replace(" i'", " I'")
 
 if __name__ == "__main__":
