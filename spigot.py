@@ -185,7 +185,11 @@ class Spigot(Flask):
         # This means the page title will bear some relation to the 
         # page URL. The re.split tries to ensure that the title is 
         # just a single sentence.
-        page_title, _, _ = self.datedlink(time.time(), location.replace("_", " ").capitalize(), target_len=60, rng=rng)
+        seedtitle = location.replace("_", " "). \
+                capitalize(). \
+                replace(" i ", " I "). \
+                replace(" i'", "I'")
+        page_title, _, _ = self.datedlink(time.time(), seedtitle, target_len=60, rng=rng)
 
         # Generate short Markov output to make "earlier" and "later" links.
         earlier, date, earlier_url = self.datedlink(stamp - rng.randint(86400*2, 86400*30), rng=rng)
