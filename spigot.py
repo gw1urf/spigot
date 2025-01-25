@@ -162,6 +162,7 @@ class Spigot(Flask):
         # parts of the location contribute to seeding the random number
         # generator.
         rng = random.Random(struct.unpack("L", hashlib.md5(location.encode("utf-8")).digest()[:8])[0])
+        current_url = location
 
         # If the location looks like a dated article of the form  
         # 2025/01/03/title/, make a date for the page and strip it
@@ -197,7 +198,7 @@ class Spigot(Flask):
             "title":       page_title,
             "pagedate":    page_date,
             "current":     page_title,
-            "current_url": location,
+            "current_url": current_url,
             "earlier":     earlier,
             "later":       later,
             "earlier_url": earlier_url, 
