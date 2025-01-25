@@ -22,8 +22,7 @@ Current post: <a href="{{top_url}}/{{current_url}}" style="width: 33%;">{{curren
 Next post: <a href="{{top_url}}/{{later_url}}" style="width: 33%;">{{later | truncate(40, false) }}</a><br>
 {% endif %}
 
-<p>
-{{markov}}
+{{markov_text}}
 
 </body>
 </html>

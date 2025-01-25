@@ -102,9 +102,6 @@ class Spigot(Flask):
         # page is fixed (more or less).
         rng = random.Random(self.top_page_seed)
 
-        # Some text content for the page.
-        text = self.markov.generate(self.top_page_len, rng=rng).replace("\n\n", "\n<p>\n")
-
         # Make a list of dated links. We step through the date range of the
         # "blog", aiming for approximately the number of links requested.
         #
@@ -131,7 +128,7 @@ class Spigot(Flask):
         # extra stuff to be put in, if needed.
         tags = {
             "top_url":     self.top_url,
-            "markov_text": text,
+            "markov_text": self.pagetext(rng),
             "link_list":   link_list,
         }
         if hasattr(self, "top_pre_hook"):
@@ -196,9 +193,7 @@ class Spigot(Flask):
         # Create an initial list of tags for jinja.
         tags = {
             "top_url":     self.top_url,
-            "markov":
-            self.addlinks(self.markov.generate(rng.randint(self.min_page_len,
-            self.max_page_len), rng=rng)).replace("\n\n", "\n<p>\n"),
+            "markov_text": self.pagetext(rng),
             "title":       page_title,
             "pagedate":    page_date,
             "current":     page_title,
@@ -239,36 +234,35 @@ class Spigot(Flask):
         url = dt.strftime("%Y/%m/%d/") + quote(re.sub(" ", "_", title.lower()))+"/"
         return title, date, url
 
+    # Create the "markov" tag - a number of paragraphs.
+    def pagetext(self, rng=random.Random()):
+        text = ""
+        paragraphs = self.markov.generate(rng.randint(self.min_page_len, self.max_page_len), rng=rng)
+        for para in paragraphs:
+            # Add a realistic link to each paragraph.
+            pos = rng.randint(0, len(para))
+
+            # Match into:
+            #     (1) the first {pos} characters,
+            #     (2) any non-whitespace characters,
+            #     (3) any whitespace characters,
+            #     (4) two wordlike things
+            #     (5) the rest of the string.
+            # We'll glue the first three together, stick an "a href" around
+            # the fourth, glue the fifth back on and skip pos to just after
+            # where we modified.
+            m = re.match(r"^(.{"+str(pos)+"}\S*\s+)([A-Za-z']+\s+[a-z']+)(\s+.*)$", para, re.S)
+            if m:
+                # Don't make links on short text.
+                if len(m.group(2)) > 3:
+                    _, _, url = self.datedlink(rng.randint(self.blog_start_date, self.roundedtime(90)), rng=rng)
+                    para = m.group(1) + f"""<a href="{self.top_url}/{url}/">{m.group(2)}</a>""" + m.group(3)
+            text += "<p>\n" + para + "\n"
+        return text
+
     # Generate a timestamp value, rounded to a specified
     # number of days. e.g. roundedtime(31) would return 
     # 1st January for the whole of January.
     def roundedtime(self, days):
         return int(time.time()/86400/days)*86400*days
 
-    # Add some realistic looking links to generated text.
-    def addlinks(self, text):
-        pos = random.randint(int(len(text)/8), int(len(text)/4))
-        while pos < len(text)-80:
-            # Match into groups of:
-            #     (1) the first {pos} characters,
-            #     (2) any non-whitespace characters,
-            #     (3) any whitespace characters,
-            #     (4) any non-whitespace characters,
-            #     (5) the rest of the string.
-            # We'll glue the first three together, stick an "a href" around
-            # the fourth, glue the fifth back on and skip pos to just after
-            # where we modified.
-            m = re.match(r"^(.{"+str(pos)+"}\S*\s+)([A-Za-z']+\s+[a-z']+)(\s+.*)$", text, re.S)
-            if m:
-                # Don't make links on short text.
-                if len(m.group(2)) > 3:
-                    _, _, url = self.datedlink(random.randint(self.blog_start_date, self.roundedtime(90)))
-                    text = m.group(1) + f"""<a href="{self.top_url}/{url}/">{m.group(2)}</a>""" + m.group(3)
-
-                # Move past what we just looked at.
-                pos = len(text)-len(m.group(3))
-                    
-            # Move on further.
-            pos += random.randint(int(len(text)/8), int(len(text)/4))
-
-        return text
