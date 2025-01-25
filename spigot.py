@@ -236,7 +236,7 @@ class Spigot(Flask):
         return title, date, url
 
     # Create the "markov" tag - a number of paragraphs.
-    def pagetext(self, rng=random.Random()):
+    def pagetext(self, rng=random):
         text = ""
         paragraphs = self.markov.generate(rng.randint(self.min_page_len, self.max_page_len), rng=rng)
         for para in paragraphs:
