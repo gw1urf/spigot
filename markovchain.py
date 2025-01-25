@@ -134,7 +134,7 @@ class MarkovChain:
 
 if __name__ == "__main__":
     # Benchmark with the following details.
-    seconds = 2
+    seconds = 5
     memory = 8
     length = 20000
     rndseed = 42
@@ -154,6 +154,5 @@ if __name__ == "__main__":
         if end - start >= seconds:
             break
     print(page[0])
-    print(len("".join(page)))
     seconds = end-start
     print(f"\n{n/seconds:.2f} texts per second, ~{n*length/seconds:.0f} chars per second")
