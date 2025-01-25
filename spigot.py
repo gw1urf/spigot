@@ -103,7 +103,7 @@ class Spigot(Flask):
         rng = random.Random(self.top_page_seed)
 
         # Some text content for the page.
-        text = self.markov.generate(self.top_page_len, rng=rng).replace("\n\n", "<p>")
+        text = self.markov.generate(self.top_page_len, rng=rng).replace("\n\n", "\n<p>\n")
 
         # Make a list of dated links. We step through the date range of the
         # "blog", aiming for approximately the number of links requested.
@@ -196,7 +196,9 @@ class Spigot(Flask):
         # Create an initial list of tags for jinja.
         tags = {
             "top_url":     self.top_url,
-            "markov":      self.addlinks(self.markov.generate(rng.randint(self.min_page_len, self.max_page_len), rng=rng)).replace("\n\n", "<p>"),
+            "markov":
+            self.addlinks(self.markov.generate(rng.randint(self.min_page_len,
+            self.max_page_len), rng=rng)).replace("\n\n", "\n<p>\n"),
             "title":       page_title,
             "pagedate":    page_date,
             "current":     page_title,
