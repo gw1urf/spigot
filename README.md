@@ -12,9 +12,9 @@ top level "index" page and individual dated "posts" hosted at URLs below
 the top level..
 
 The code is very much designed around speed, since my own install is seeing
-upwards of 40,000 hits per hour. I hope it's still reasonably readable,
-though - I've tried not to make its workings too obscure in the seach for
-optimisation.
+upwards of 40,000 hits per hour and has seen extended periods ove over
+80,000 hits/hour. I hope it's still reasonably readable, though - I've tried
+not to make its workings too obscure in the seach for optimisation.
 
 I'm not going to give too much detail in how to use this code, at this
 point. If you're not fairly familiar with deploying web applications and
