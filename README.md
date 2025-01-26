@@ -62,4 +62,4 @@ tree of pages, you're just asking for lots of hits.
 
 As a slight protection, the example index.py includes a check to prevent
 it running unless under a URL that's blocked in your site's robots.txt
-file.
+file. You could, of course, remove this check if you wished.
