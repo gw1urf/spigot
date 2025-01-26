@@ -239,10 +239,18 @@ class Spigot(Flask):
         url = dt.strftime("%Y/%m/%d/") + quote(re.sub(" ", "_", title.lower()))+"/"
         return title, date, url
 
+    # Return a target length for a page.
+    # I've separated this function out so that it can
+    # be overridden by a derived class. For my own version
+    # of spigot, I'm using a power law to generate a distribution
+    # of page sizes that more closely matches other pages on my site.
+    def targetlength(self, rng):
+        return rng.randint(self.min_page_len, self.max_page_len)
+
     # Create the "markov" tag - a number of paragraphs.
     def pagetext(self, rng=random):
         text = ""
-        paragraphs = self.markov.generate(rng.randint(self.min_page_len, self.max_page_len), rng=rng)
+        paragraphs = self.markov.generate(self.targetlength(rng), rng=rng)
         for para in paragraphs:
             # Add a realistic link to each paragraph.
             pos = rng.randint(0, len(para))
