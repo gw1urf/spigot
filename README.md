@@ -63,3 +63,8 @@ tree of pages, you're just asking for lots of hits.
 As a slight protection, the example index.py includes a check to prevent
 it running unless under a URL that's blocked in your site's robots.txt
 file. You could, of course, remove this check if you wished.
+
+I wrote a couple of blog posts about my experiences:
+
+* [Original post](https://www.ty-penguin.org.uk/~auj/blog/2024/09/13/spigot/) and 
+* [My experiences](https://www.ty-penguin.org.uk/~auj/blog/2025/01/02/spigot/) in making it cope with ovwr a million hits per day without killing my server.
