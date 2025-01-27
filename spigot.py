@@ -20,9 +20,10 @@ class Spigot(Flask):
 
     # The page pre-hook is called before page content has been created. This
     # function is passed a dict containing the tags that Jinja2 will be
-    # passed. Your hook can modify this dict.
+    # passed, and the random.Random() instance that was used to create
+    # the page. Your hook can modify this dict.
     #
-    # def page_pre_hook(self, jinja_tags):
+    # def page_pre_hook(self, jinja_tags, rng):
     #     jinja_tags["extra_stuff"] = 42
   
     # The page post-hook is called after page content has been created. This
@@ -35,7 +36,7 @@ class Spigot(Flask):
     # The top hook is called after top "index" page content 
     # has been created, in a similar manner to the page hook.
     #
-    # def top_pre_hook(self, jinja_tags):
+    # def top_pre_hook(self, jinja_tags, rng):
     #     jinja_tags["extra_stuff"] = 42
 
     def __init__(self,
@@ -132,7 +133,7 @@ class Spigot(Flask):
             "link_list":   link_list,
         }
         if hasattr(self, "top_pre_hook"):
-            self.top_pre_hook(tags)
+            self.top_pre_hook(tags, rng)
 
         # Finally render the template with the collected info.
         return render_template("index.tpl", **tags)
@@ -211,7 +212,7 @@ class Spigot(Flask):
 
         # Call page_pre_hook, which might change or augment tags.
         if hasattr(self, "page_pre_hook"):
-            self.page_pre_hook(tags)
+            self.page_pre_hook(tags, rng)
                 
         # Finally, render the "page" template, using what we've gathered.
         return render_template("page.tpl", **tags)
