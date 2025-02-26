@@ -265,7 +265,7 @@ class Spigot(Flask):
         title = " ".join(title)
 
         date = dt.strftime("%Y-%m-%d")
-        url = dt.strftime("%Y/%m/%d/") + quote(re.sub(" ", "_", title.lower()))+"/"
+        url = dt.strftime("%Y/%m/%d/") + quote(re.sub(r"[ %]", "_", title.lower()))+"/"
         return title, date, url
 
     # Return a target length for a page.
