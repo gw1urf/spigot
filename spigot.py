@@ -14,7 +14,20 @@ class Spigot(Flask):
     # The abort hook is called whenever a connection is aborted.
     # It should return the 503 error message. You might use this,
     # for example, to flag that an abort has happened.
-    # 
+    #
+    # Update: if you return a tuple (http_code, content) then,
+    # if the code is 200, a normal page will be returned, otherwise
+    # the abort will be called with the code and content. This allows
+    # you to replace an abort with a real page. Beware, though, that
+    # the abort functionality is triggered when the spigot has exceeded
+    # the thread queue length, so whatever you do to generate content
+    # needs to be very light on CPU.
+    #
+    # I've made this change because I've got an idea for caching a few
+    # thousand recently generated pages and, when we're out of resources,
+    # just returning one of those randomly. Should be very quick and should
+    # continue to generate garbage even under high request rates.
+    #
     # def abort_hook(self):
     #     return "Please try again later"
 
@@ -150,7 +163,22 @@ class Spigot(Flask):
             return content
         except queue.Full:
             if hasattr(self, "abort_hook"):
-                abort(503, self.abort_hook())
+                # abort_hook can now return either a string or 
+                # a http code and a string. In the latter case,
+                # if the code is 200 then a normal return is
+                # done with the content, else the code is passed
+                # to abort along with the content.
+                hook_output = self.abort_hook()
+                if isinstance(hook_output, str):
+                    abort(503, hook_output)
+                elif isinstance(hook_output, tuple) or isinstance(hook_output, list):
+                    code, content = hook_output
+                    if code != 200:
+                        abort(code, content)
+                    else:
+                        return content
+                else:
+                    abort(503, "Try again later")
             else:
                 abort(503, "Try again later")
 
