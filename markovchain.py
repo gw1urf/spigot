@@ -40,12 +40,14 @@ class MarkovChain:
                     c = " "
 
                 if len(prev) == self.memory:
+                    nextprev = prev[1:] + c
                     if prev in self.dict:
-                        self.dict[prev] += c
+                        self.dict[prev].append(nextprev)
                     else:
-                        self.dict[prev] = c
-                    prev = prev[1:]
-                prev = prev + c
+                        self.dict[prev] = [nextprev]
+                    prev = nextprev
+                else:
+                    prev = prev + c
 
                 # Break out ASAP on the second pass
                 if scan==1 and prev in self.dict:
@@ -104,7 +106,8 @@ class MarkovChain:
         length = 0
 
         while True:
-            c = rng.choice(self.dict[prev])
+            nextprev = rng.choice(self.dict[prev])
+            c = nextprev[-1]
             text.append(c)
             if c == ".":
                 if numchars == 0:
@@ -123,7 +126,7 @@ class MarkovChain:
                             break
 
                         text = []
-            prev = prev[1:] + c
+            prev = nextprev
 
         # Make each paragraph array into a string.
         paragraphs = [ "".join(p) for p in paragraphs ]
